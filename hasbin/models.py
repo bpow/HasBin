@@ -82,3 +82,57 @@ class DxGeneComment(models.Model):
 class DxGeneReference(models.Model):
     dx_gene = models.ForeignKey(DxGene, related_name="references")
     reference = models.TextField()
+
+
+class BinnedGene(models.Model):
+    LIKELIHOOD_CHOICES = list(enumerate((
+        "<1% or unable to determine",
+        "1-5%",
+        "6-49%",
+        ">50%"
+        )))
+    SEVERITY_CHOICES = list(enumerate((
+        "Modest or no morbidity",
+        "Serious morbidity",
+        "Possible death",
+        "Sudden death"
+        )))
+    ACCEPTABILITY_CHOICES = list(enumerate((
+        "Onerous (e.g. prophylactic gastrectomy)",
+        "Minimally acceptable (prophylactic surgery)",
+        "Moderately acceptable (invasive screening, dietary restrictions)",
+        "Highly acceptable (annual blood tests)"
+        )))
+    EFFICACY_CHOICES = list(enumerate((
+        "Ineffective",
+        "Minimally effective",
+        "Modestly effective",
+        "Highly effective"
+        )))
+    EVIDENCE_CHOICES = list(enumerate((
+        "Controversial or poor evidence",
+        "Minimal evidence",
+        "Moderate evidence",
+        "Substantial evidence"
+        )))
+    hugo_gene = models.ForeignKey(HugoGene)
+    phenotype = models.CharField(max_length=64)
+    outcome_of_interest = models.CharField(max_length=64,)
+    likelihood_of_outcome = models.PositiveSmallIntegerField(choices=LIKELIHOOD_CHOICES, null=True,)
+    severity_of_outcome = models.PositiveSmallIntegerField(choices=SEVERITY_CHOICES, null=True,)
+    intervention = models.CharField(max_length=64,)
+    acceptability_of_intervention = models.PositiveSmallIntegerField(choices=ACCEPTABILITY_CHOICES, null=True,)
+    efficacy_of_intervention = models.PositiveSmallIntegerField(choices=EFFICACY_CHOICES, null=True,)
+    evidence_base = models.PositiveSmallIntegerField(choices=EVIDENCE_CHOICES, null=True,)
+    last_changed = models.DateTimeField(auto_now=True, editable=False,)
+
+
+class BinnedGeneReference(models.Model):
+    binned_gene = models.ForeignKey(BinnedGene, related_name="references")
+    reference = models.CharField(max_length=128)
+
+
+class BinnedGeneComment(models.Model):
+    binned_gene = models.ForeignKey(BinnedGene, related_name="comments")
+    comment = models.TextField()
+    when = models.DateTimeField(auto_now=True, editable=False,)
