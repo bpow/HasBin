@@ -1,3 +1,8 @@
 from django.contrib import admin
+import hasbin.models as models
 
-# Register your models here.
+admin.site.register((
+    models.HugoGene,
+    models.DxList,
+    models.BinnedGene,
+))
