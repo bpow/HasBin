@@ -63,11 +63,12 @@ class DxGene(models.Model):
         'Diagnostic, low-priority (2)',
         'Research use only (3)',
     )))
-    gene = models.CharField(max_length=32)  # TODO- maybe enforce as ForeignKey to HugoGene vs. allowing/showing mismatched data
+    hugo_gene = models.ForeignKey(HugoGene)
     phenotype = models.CharField(max_length=64)
     tier = models.PositiveSmallIntegerField(choices=TIER_CHOICES, null=True)
     syndromic = models.NullBooleanField()
     dxlist = models.ForeignKey(DxList, related_name='gene_phenotype_pairs')
+    unique_together = ('dxlist', 'hugo_gene', 'phenotype')
     history = HistoricalRecords()
 
     def __str__(self):
