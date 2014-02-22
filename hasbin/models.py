@@ -68,20 +68,33 @@ class DxGene(models.Model):
     tier = models.PositiveSmallIntegerField(choices=TIER_CHOICES, null=True)
     syndromic = models.NullBooleanField()
     last_update = models.DateTimeField(auto_now=True, editable=False,)
-    #last_update_by = models.ForeignKey(Users)
+    last_update_by = models.ForeignKey('auth.User')
     dxlist = models.ForeignKey(DxList, related_name='gene_phenotype_pairs')
+
+    def __str__(self):
+        return "%s : %s" % (str(self.gene), self.phenotype)
 
 
 class DxGeneComment(models.Model):
     dx_gene = models.ForeignKey(DxGene, related_name="comments")
     comment = models.TextField()
     when = models.DateTimeField(auto_now=True, editable=False,)
-    #user = models.ForeignKey(Users)
+    user = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        if len(self.comment) > 50:
+            return self.comment[:50] + '...'
+        else:
+            return self.comment
 
 
 class DxGeneReference(models.Model):
     dx_gene = models.ForeignKey(DxGene, related_name="references")
     reference = models.TextField()
+    user = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return reference
 
 
 class BinnedGene(models.Model):
@@ -126,13 +139,32 @@ class BinnedGene(models.Model):
     evidence_base = models.PositiveSmallIntegerField(choices=EVIDENCE_CHOICES, null=True,)
     last_changed = models.DateTimeField(auto_now=True, editable=False,)
 
+    def score(self):
+        return sum([x or 0 for x in (self.likelihood_of_outcome, self.severity_of_outcome,
+            self.acceptability_of_intervention, self.efficacy_of_intervention, self.evidence_base)])
+
+    def __str__(self):
+        return "%s : %s : %d" % (str(self.hugo_gene), self.phenotype, self.score())
+
 
 class BinnedGeneReference(models.Model):
     binned_gene = models.ForeignKey(BinnedGene, related_name="references")
     reference = models.CharField(max_length=128)
+    user = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return self.reference
 
 
 class BinnedGeneComment(models.Model):
     binned_gene = models.ForeignKey(BinnedGene, related_name="comments")
     comment = models.TextField()
     when = models.DateTimeField(auto_now=True, editable=False,)
+    user = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        if len(self.comment) > 50:
+            return self.comment[:50] + '...'
+        else:
+            return self.comment
+
