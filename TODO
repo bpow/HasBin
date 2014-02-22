@@ -1,0 +1,5 @@
+* add users (django-registration?)
+* allow users not-logged-in to view?
+* DxList management
+* create new DxList from text import
+
