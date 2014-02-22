@@ -1,4 +1,5 @@
 import django.db.models as models
+from simple_history.models import HistoricalRecords
 
 
 class HugoGene(models.Model):
@@ -52,8 +53,7 @@ make_hugo_list_field('refseq_accession', models.CharField(max_length=32,),)
 class DxList(models.Model):
     name = models.CharField(max_length=64)
     official = models.BooleanField()
-    last_update = models.DateTimeField(auto_now=True)
-    #last_update_by = models.ForeignKey(Users)
+    history = HistoricalRecords()
 
 
 class DxGene(models.Model):
@@ -67,9 +67,8 @@ class DxGene(models.Model):
     phenotype = models.CharField(max_length=64)
     tier = models.PositiveSmallIntegerField(choices=TIER_CHOICES, null=True)
     syndromic = models.NullBooleanField()
-    last_update = models.DateTimeField(auto_now=True, editable=False,)
-    last_update_by = models.ForeignKey('auth.User')
     dxlist = models.ForeignKey(DxList, related_name='gene_phenotype_pairs')
+    history = HistoricalRecords()
 
     def __str__(self):
         return "%s : %s" % (str(self.gene), self.phenotype)
@@ -78,8 +77,7 @@ class DxGene(models.Model):
 class DxGeneComment(models.Model):
     dx_gene = models.ForeignKey(DxGene, related_name="comments")
     comment = models.TextField()
-    when = models.DateTimeField(auto_now=True, editable=False,)
-    user = models.ForeignKey('auth.User')
+    history = HistoricalRecords()
 
     def __str__(self):
         if len(self.comment) > 50:
@@ -91,7 +89,7 @@ class DxGeneComment(models.Model):
 class DxGeneReference(models.Model):
     dx_gene = models.ForeignKey(DxGene, related_name="references")
     reference = models.TextField()
-    user = models.ForeignKey('auth.User')
+    history = HistoricalRecords()
 
     def __str__(self):
         return reference
@@ -137,7 +135,7 @@ class BinnedGene(models.Model):
     acceptability_of_intervention = models.PositiveSmallIntegerField(choices=ACCEPTABILITY_CHOICES, null=True,)
     efficacy_of_intervention = models.PositiveSmallIntegerField(choices=EFFICACY_CHOICES, null=True,)
     evidence_base = models.PositiveSmallIntegerField(choices=EVIDENCE_CHOICES, null=True,)
-    last_changed = models.DateTimeField(auto_now=True, editable=False,)
+    history = HistoricalRecords()
 
     def score(self):
         return sum([x or 0 for x in (self.likelihood_of_outcome, self.severity_of_outcome,
@@ -150,7 +148,7 @@ class BinnedGene(models.Model):
 class BinnedGeneReference(models.Model):
     binned_gene = models.ForeignKey(BinnedGene, related_name="references")
     reference = models.CharField(max_length=128)
-    user = models.ForeignKey('auth.User')
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.reference
@@ -159,8 +157,7 @@ class BinnedGeneReference(models.Model):
 class BinnedGeneComment(models.Model):
     binned_gene = models.ForeignKey(BinnedGene, related_name="comments")
     comment = models.TextField()
-    when = models.DateTimeField(auto_now=True, editable=False,)
-    user = models.ForeignKey('auth.User')
+    history = HistoricalRecords()
 
     def __str__(self):
         if len(self.comment) > 50:

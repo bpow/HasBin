@@ -1,4 +1,5 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 import hasbin.models as models
 
 
@@ -10,7 +11,7 @@ class DxGeneCommentInline(admin.TabularInline):
     model = models.DxGeneComment
 
 
-class DxGeneAdmin(admin.ModelAdmin):
+class DxGeneAdmin(SimpleHistoryAdmin):
     inlines = [DxGeneReferenceInline, DxGeneCommentInline]
 
 
@@ -22,7 +23,7 @@ class BinnedGeneCommentInline(admin.TabularInline):
     model = models.BinnedGeneComment
 
 
-class BinnedGeneAdmin(admin.ModelAdmin):
+class BinnedGeneAdmin(SimpleHistoryAdmin):
     inlines = [BinnedGeneReferenceInline, BinnedGeneCommentInline]
 
 
