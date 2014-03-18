@@ -38,3 +38,11 @@
 The main models and other code are in the hasbin subdirectory.
 
 The django "project" directory is proj_hasbin.
+
+## Miscellaneous
+
+If you want a list of approved hugo symbols and the gene names:
+
+   ```shell
+   echo -e ".mode tabs\nselect symbol, name from hasbin_hugogene where status='Approved';" | sqlite3 db.sqlite3 | tee /tmp/hgnc-symbols
+   ```
