@@ -54,7 +54,7 @@ class DxList(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField()
     version = models.CharField(max_length=16)
-    official = models.BooleanField()
+    official = models.BooleanField(default=False)
     history = HistoricalRecords()
 
 
