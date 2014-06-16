@@ -4,3 +4,4 @@ venv/
 .project
 .pydevproject
 db.sqlite3
+*~
