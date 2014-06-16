@@ -52,6 +52,8 @@ make_hugo_list_field('refseq_accession', models.CharField(max_length=32,),)
 
 class DxList(models.Model):
     name = models.CharField(max_length=64)
+    description = models.TextField()
+    version = models.CharField(max_length=16)
     official = models.BooleanField()
     history = HistoricalRecords()
 
