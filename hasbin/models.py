@@ -3,8 +3,8 @@ from simple_history.models import HistoricalRecords
 
 
 class HugoGene(models.Model):
-    hgnc_id = models.PositiveSmallIntegerField(primary_key=True)
-    symbol = models.CharField(max_length=32, verbose_name='HUGO symbol',)
+    hgnc_id = models.PositiveSmallIntegerField()
+    symbol = models.CharField(max_length=32, verbose_name='HUGO symbol', primary_key=True,)
     name = models.CharField(max_length=180, verbose_name='HUGO name',)
     # TODO - really an enum
     status = models.CharField(max_length=20, verbose_name='HUGO status',)
@@ -72,7 +72,7 @@ class DxGene(models.Model):
         ('XR', 'X-linked recessive'),
         ('CX', 'Complex'),
     )
-    hugo_gene = models.ForeignKey(HugoGene)
+    hugo_gene = models.ForeignKey(HugoGene, related_name='dxgenes')
     phenotype = models.CharField(max_length=64)
     tier = models.PositiveSmallIntegerField(choices=TIER_CHOICES, null=True)
     syndromic = models.NullBooleanField()
