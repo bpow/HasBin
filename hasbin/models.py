@@ -3,7 +3,7 @@ from simple_history.models import HistoricalRecords
 
 
 class HugoGene(models.Model):
-    hgnc_id = models.PositiveSmallIntegerField()
+    hgnc_id = models.PositiveSmallIntegerField(unique=True,)
     symbol = models.CharField(max_length=32, verbose_name='HUGO symbol', primary_key=True,)
     name = models.CharField(max_length=180, verbose_name='HUGO name',)
     # TODO - really an enum
@@ -52,7 +52,7 @@ make_hugo_list_field('refseq_accession', models.CharField(max_length=32,),)
 
 class DxList(models.Model):
     name = models.CharField(max_length=64)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     version = models.CharField(max_length=16)
     official = models.BooleanField(default=False)
     history = HistoricalRecords()
@@ -72,13 +72,14 @@ class DxGene(models.Model):
         ('XR', 'X-linked recessive'),
         ('CX', 'Complex'),
     )
-    hugo_gene = models.ForeignKey(HugoGene, related_name='dxgenes')
+    symbol = models.CharField(max_length=32)
+    hugo_gene = models.ForeignKey(HugoGene, related_name='dxgenes', null=True)
     phenotype = models.CharField(max_length=64)
     tier = models.PositiveSmallIntegerField(choices=TIER_CHOICES, null=True)
     syndromic = models.NullBooleanField()
     inheritance = models.CharField(max_length=3, null=True, choices=INHERITANCE_CHOICES)
     dxlist = models.ForeignKey(DxList, related_name='gene_phenotype_pairs')
-    unique_together = ('dxlist', 'hugo_gene', 'phenotype')
+    unique_together = ('dxlist', 'symbol', 'phenotype')
     history = HistoricalRecords()
 
     def __str__(self):
@@ -137,7 +138,8 @@ class BinnedGene(models.Model):
         "Moderate evidence",
         "Substantial evidence"
         )))
-    hugo_gene = models.ForeignKey(HugoGene)
+    symbol = models.CharField(max_length=32)
+    hugo_gene = models.ForeignKey(HugoGene, related_name='binned_genes', null=True)
     phenotype = models.CharField(max_length=64)
     outcome_of_interest = models.CharField(max_length=64,)
     likelihood_of_outcome = models.PositiveSmallIntegerField(choices=LIKELIHOOD_CHOICES, null=True,)
