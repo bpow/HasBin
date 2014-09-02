@@ -57,6 +57,9 @@ class DxList(models.Model):
     official = models.BooleanField(default=False)
     history = HistoricalRecords()
 
+    def __str__(self):
+        return "%s (%s)"%(self.name, self.version)
+
 
 class DxGene(models.Model):
     TIER_CHOICES = list(enumerate((
@@ -83,7 +86,7 @@ class DxGene(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return "%s : %s" % (str(self.gene), self.phenotype)
+        return "%s : %s" % (str(self.hugo_gene), self.phenotype)
 
 
 class DxGeneComment(models.Model):
