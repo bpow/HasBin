@@ -34,6 +34,11 @@ class Command(BaseCommand):
             raise
         for d in data['response']['docs']:
             init_data = dict(((k, d[k]) for k in model.HugoGene._meta.get_all_field_names() if k in d))
+            try:
+                init_data['hgnc_id'] = int(init_data['hgnc_id'])
+            except ValueError:
+                if (init_data['hgnc_id'].startswith('HGNC:')):
+                    init_data['hgnc_id'] = int(init_data['hgnc_id'][5:])
             g = model.HugoGene.objects.create(**init_data)
             g.alias_symbols = [model.HugoAliasSymbol(alias_symbol=x) for x in d.get('alias_symbol', ())]
             g.ccds_ids = [model.HugoCcdsId(ccds_id=x) for x in d.get('ccds_id', ())]
